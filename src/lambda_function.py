@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     
     ## setting logging for cloudwatch
     logger.info(event)
-
+    logger.info("made this with ecr")
     ##creating things i have to access
     message = event['body'] 
     event_headers = event['headers'] ##headers of the event
