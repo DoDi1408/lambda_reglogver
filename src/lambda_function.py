@@ -92,9 +92,12 @@ def lambda_handler(event, context):
             response = buildResponse(400,headers,body)
     elif httpMethod == 'PATCH' and path == '/user':
 
-        if 'user_email' in data and 'access-token' in event_headers and 'new_name' in data and 'new_points' in data and 'new_password' in data:
+        if message is None:
+            return buildResponse(401, headers, {'message':'Empty body'})
+        data = json.loads(message) ##message is the body of the api request
+
+        if 'access-token' in event_headers and 'new_name' in data and 'new_points' in data and 'new_password' in data:
             token = event_headers['access-token']
-            email = data['user_email']
             nombre = data['new_name']
             puntos = data['new_points']
             contraseña = data['new_password']
@@ -109,7 +112,7 @@ def lambda_handler(event, context):
         if result['verified'] == True:
             if getUserByEmail(email) is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
-            response = updateUserByEmail(nombre,puntos,contraseña,email)
+            response = updateUserByEmail(nombre,puntos,contraseña,result['email'])
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
     
