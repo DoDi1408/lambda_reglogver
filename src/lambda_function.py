@@ -110,7 +110,7 @@ def lambda_handler(event, context):
         headers['access-token'] = token
 
         if result['verified'] == True:
-            if getUserByEmail(email) is None:
+            if getUserByEmail(result['email']) is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
             response = updateUserByEmail(nombre,puntos,contraseña,result['email'])
         else:
