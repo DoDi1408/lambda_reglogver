@@ -27,7 +27,7 @@ def createUser(nombre,email,contraseña):
 
             logger.info("The following items have been added to the database:")
             logger.info(cur)
-        return buildResponse(200,headers,{'message': 'Se ha creado el usuario %s' % nombre})
+        return buildResponse(201,headers,{'message': 'Se ha creado el usuario %s' % nombre})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
     #tratar errores
@@ -48,6 +48,15 @@ def updateUserByEmail(nuevo_nombre, nuevos_puntos,nueva_contraseña,email):
             sql_string = "UPDATE usuarios SET nombre_usuario = %s, puntos_usuario = %s, contraseña_usuario = %s WHERE email_usuario = %s"
             cur.execute(sql_string,(nuevo_nombre,nuevos_puntos,nueva_contraseña,email))
             conn.commit()
-            return buildResponse(200,headers,{'message': 'Se ha actualizado el usuario %s' % nuevo_nombre})
+
+            sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
+            cur.execute(sql_string, (email,))
+            user = cur.fetchone()
+
+            return buildResponse(200,headers,{'message': 'Se ha actualizado el usuario con el email %s' % email,
+                                            'id':user[0],
+                                            'new_name':user[2],
+                                            'new_points':user[3],
+                                            'new_password' : user[4]})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})

@@ -128,7 +128,7 @@ def lambda_handler(event, context):
             if user is None:
                 buildResponse(404, headers,{'message': 'User Not Found'})
             else:
-                response = buildResponse(204,headers,{'id':user[0],'nombre':user[2],'email':user[1],'puntos':user[3]})
+                response = buildResponse(200,headers,{'id':user[0],'nombre':user[2],'email':user[1],'puntos':user[3]})
                 logger.info(response)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
