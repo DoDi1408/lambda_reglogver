@@ -43,10 +43,13 @@ def getUserByEmail(email):
             return None
 
 def updateUserByEmail(nuevo_nombre, nuevos_puntos,nueva_contraseña,email):
+
+    contraseña_bytes = nueva_contraseña.encode('utf-8')
+    hashed_password = hashlib.blake2b(contraseña_bytes).hexdigest()
     try:
         with conn.cursor() as cur:
             sql_string = "UPDATE usuarios SET nombre_usuario = %s, puntos_usuario = %s, contraseña_usuario = %s WHERE email_usuario = %s"
-            cur.execute(sql_string,(nuevo_nombre,nuevos_puntos,nueva_contraseña,email))
+            cur.execute(sql_string,(nuevo_nombre,nuevos_puntos,hashed_password,email))
             conn.commit()
 
             sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
