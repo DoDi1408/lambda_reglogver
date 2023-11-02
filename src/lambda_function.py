@@ -14,7 +14,6 @@ def lambda_handler(event, context):
     
     ## setting logging for cloudwatch
     logger.info(event)
-    logger.info("made this with ecr")
     ##creating things i have to access
     message = event['body'] 
     event_headers = event['headers'] ##headers of the event
@@ -125,6 +124,7 @@ def lambda_handler(event, context):
         headers['access-token'] = token
 
         if result['verified'] == True:
+            logger.info(result)
             user = getUserByEmail(result['email'])
             if user is None:
                 buildResponse(404, headers,{'message': 'User Not Found'})
@@ -134,7 +134,6 @@ def lambda_handler(event, context):
             response = buildResponse(403,headers,{'message' : result['message']})
     else:
         response = buildResponse(404, headers,{'message': 'Not Found'})
-
     return response
 
 
