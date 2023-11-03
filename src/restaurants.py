@@ -15,8 +15,9 @@ def getRestaurants(headers):
                 restaurante_dict = {
                     "id": restaurante[0],
                     "nombre": restaurante[1],
-                    "latitud": restaurante[2],
-                    "longitud" : restaurante[3]
+                    "logo": restaurante[2],
+                    "latitud" : restaurante[3],
+                    "longitud" : restaurante[4]
                     # Agrega otros campos aquí según sea necesario
                 }
                 restaurantes_json.append(restaurante_dict)
