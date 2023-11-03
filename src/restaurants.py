@@ -9,6 +9,18 @@ def getRestaurants(headers):
             sql_string = "SELECT * FROM establecimiento"
             cur.execute(sql_string, )
             restaurantes = cur.fetchall()
-            return buildResponse(200,headers,json.dumps(list(restaurantes)))
+            # Construir una lista de diccionarios en el formato deseado
+            restaurantes_json = []
+            for restaurante in restaurantes:
+                restaurante_dict = {
+                    "id": restaurante[0],
+                    "nombre": restaurante[1],
+                    "latitud": restaurante[2],
+                    "longitud" : restaurante[3]
+                    # Agrega otros campos aquí según sea necesario
+                }
+                restaurantes_json.append(restaurante_dict)
+            
+            return buildResponse(200, headers, restaurantes_json)
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
