@@ -33,24 +33,24 @@ def getUserByEmail(email):
         else:
             return None
 
-def updateUserByEmail(nuevo_nombre, nuevos_puntos,nueva_contraseña,email,headers):
+def updateUserByEmail(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
 
     contraseña_bytes = nueva_contraseña.encode('utf-8')
     hashed_password = hashlib.blake2b(contraseña_bytes).hexdigest()
     try:
         with conn.cursor() as cur:
-            sql_string = "UPDATE usuarios SET nombre_usuario = %s, puntos_usuario = %s, contraseña_usuario = %s WHERE email_usuario = %s"
-            cur.execute(sql_string,(nuevo_nombre,nuevos_puntos,hashed_password,email))
+            sql_string = "UPDATE usuarios SET nombre_usuario = %s, email_usuario = %s, contraseña_usuario = %s WHERE id_usuario = %s"
+            cur.execute(sql_string,(nuevo_nombre,nuevo_email,hashed_password,id))
             conn.commit()
 
-            sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
-            cur.execute(sql_string, (email,))
+            sql_string = "SELECT * FROM usuarios WHERE id_usuario = %s"
+            cur.execute(sql_string, (id))
             user = cur.fetchone()
 
-            return buildResponse(200,headers,{'message': 'User with email: %s updated' % email,
+            return buildResponse(200,headers,{'message': 'User with id: %s updated' % id,
                                             'id':user[0],
+                                            'new_email' : user[1],
                                             'new_name':user[2],
-                                            'new_points':user[3],
                                             'new_password' : user[4]})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})

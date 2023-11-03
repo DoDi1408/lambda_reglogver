@@ -3,6 +3,7 @@ from auth import *
 from util import buildResponse
 from user import *
 from restaurants import *
+from promotions import *
 #default headers:
 headers = {
             'Content-Type' :'application/json',
@@ -19,6 +20,7 @@ def lambda_handler(event, context):
     event_headers = event['headers'] ##headers of the event
     
     queryParams = event['queryStringParameters'] ##url parameters
+    multiqueryParams = event['multiValueQueryStringParameters'] ## url multi parameters
     pathParams = event['pathParameters']
 
     sourceIp = event_headers['X-Forwarded-For'] #ip source request
@@ -97,10 +99,10 @@ def lambda_handler(event, context):
             return buildResponse(401, headers, {'message':'Empty body'})
         data = json.loads(message) ##message is the body of the api request
 
-        if 'access-token' in event_headers and 'new_name' in data and 'new_points' in data and 'new_password' in data:
+        if 'access-token' in event_headers and 'new_name' in data and 'new_email' in data and 'new_password' in data:
             token = event_headers['access-token']
             nombre = data['new_name']
-            puntos = data['new_points']
+            nuevo_email = data['new_email']
             contraseña = data['new_password']
         else:
             return buildResponse(401,headers,{'message' :'All fields requiered'})
@@ -108,12 +110,13 @@ def lambda_handler(event, context):
         result = authenticateToken(token,sourceIp)
 
         token = result['accessToken']
+        id = result['id']
         headers['access-token'] = token
 
         if result['verified'] == True:
             if getUserByEmail(result['email']) is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
-            response = updateUserByEmail(nombre,puntos,contraseña,result['email'],headers)
+            response = updateUserByEmail(nombre,nuevo_email,contraseña,id,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
 
@@ -167,6 +170,30 @@ def lambda_handler(event, context):
             response = getRestaurants(headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
+
+    elif httpMethod == 'GET' and path == '/promotions':
+
+        if 'access-token' in event_headers:
+            token = event_headers['access-token']
+        else:
+            return buildResponse(401,headers,{'message' :'No JWT Token'})
+
+        result = authenticateToken(token,sourceIp)
+        token = result['accessToken']
+        headers['access-token'] = token
+
+        if result['verified'] == True:
+            if 'id' in queryParams:
+                restaurantes_json = []
+                promotions = getRestaurantPromotions(int(id),headers)
+                if isinstance(promotions, Exception):
+                    return buildResponse(500,headers,{'message': "Error retrieving restaurant with id %s" % id})
+                response = promotions
+            else:
+                response = getPromotions(headers)
+        else:
+            response = buildResponse(403,headers,{'message' : result['message']})
+
 
     else:
         response = buildResponse(404, headers,{'message': 'Not Found'})
