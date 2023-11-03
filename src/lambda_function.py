@@ -164,7 +164,7 @@ def lambda_handler(event, context):
         headers['access-token'] = token
 
         if result['verified'] == True:
-            response = getRestaurants()
+            response = getRestaurants(headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
 
