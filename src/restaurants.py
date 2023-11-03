@@ -4,8 +4,11 @@ import json
 
 
 def getRestaurants():
-    with conn.cursor() as cur:
-        sql_string = "SELECT * FROM establecimiento"
-        cur.execute(sql_string, )
-        restaurantes = cur.fetchall()
-        return json.dumps(restaurantes)
+    try:
+        with conn.cursor() as cur:
+            sql_string = "SELECT * FROM establecimiento"
+            cur.execute(sql_string, )
+            restaurantes = cur.fetchall()
+            return json.dumps(restaurantes)
+    except Exception as e:
+        return buildResponse(500, headers,{'error': str(e)})
