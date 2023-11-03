@@ -9,6 +9,6 @@ def getRestaurants(headers):
             sql_string = "SELECT * FROM establecimiento"
             cur.execute(sql_string, )
             restaurantes = cur.fetchall()
-            return buildResponse(200,headers,{json.dumps(restaurantes)})
+            return buildResponse(200,headers,{json.dumps(list(restaurantes))})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
