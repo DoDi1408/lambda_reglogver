@@ -1,19 +1,12 @@
 from db import conn
 import hashlib
 from util import buildResponse
-import logging
 
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
-#default headers:
-headers = {
-            'Content-Type' :'application/json',
-            'Access-Control-Allow-Origin' : '*'
-}
 
-def createUser(nombre,email,contraseña):
+
+def createUser(nombre,email,contraseña,headers):
     try:
         contraseña_bytes = contraseña.encode('utf-8')
         hashed_password = hashlib.blake2b(contraseña_bytes).hexdigest()
@@ -25,9 +18,7 @@ def createUser(nombre,email,contraseña):
             sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
             cur.execute(sql_string, (email,))
 
-            logger.info("The following items have been added to the database:")
-            logger.info(cur)
-        return buildResponse(201,headers,{'message': 'Se ha creado el usuario %s' % nombre})
+        return buildResponse(201,headers,{'message': 'User created: %s' % nombre})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
     #tratar errores
@@ -42,7 +33,7 @@ def getUserByEmail(email):
         else:
             return None
 
-def updateUserByEmail(nuevo_nombre, nuevos_puntos,nueva_contraseña,email):
+def updateUserByEmail(nuevo_nombre, nuevos_puntos,nueva_contraseña,email,headers):
 
     contraseña_bytes = nueva_contraseña.encode('utf-8')
     hashed_password = hashlib.blake2b(contraseña_bytes).hexdigest()
@@ -56,10 +47,21 @@ def updateUserByEmail(nuevo_nombre, nuevos_puntos,nueva_contraseña,email):
             cur.execute(sql_string, (email,))
             user = cur.fetchone()
 
-            return buildResponse(200,headers,{'message': 'Se ha actualizado el usuario con el email %s' % email,
+            return buildResponse(200,headers,{'message': 'User with email: %s updated' % email,
                                             'id':user[0],
                                             'new_name':user[2],
                                             'new_points':user[3],
                                             'new_password' : user[4]})
+    except Exception as e:
+        return buildResponse(500, headers,{'error': str(e)})
+    
+def addPoints(id,points,headers):
+    try:
+        with conn.cursor() as cur:
+            
+            sql_string = "UPDATE usuarios SET puntos_usuario = puntos_usuario + %s WHERE id_usuario = %s"
+            cur.execute(sql_string, (points,id))
+            conn.commit()
+        return buildResponse(201,headers,{'message': '%s Points added to user %s' % id})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})

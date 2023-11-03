@@ -2,7 +2,7 @@ import json
 from auth import *
 from util import buildResponse
 from user import *
-
+from restaurants import *
 #default headers:
 headers = {
             'Content-Type' :'application/json',
@@ -18,16 +18,17 @@ def lambda_handler(event, context):
     message = event['body'] 
     event_headers = event['headers'] ##headers of the event
     
-    params = event['queryStringParameters'] ##url parameters
+    queryParams = event['queryStringParameters'] ##url parameters
+    pathParams = event['pathParameters']
 
     sourceIp = event_headers['X-Forwarded-For'] #ip source request
     
-    path = event['path'] ##event path like /user/register or /user
+    path = event['resource'] ##event path like /user/register or /user
     httpMethod = event['httpMethod'] ##request httpMethod
     
     ##method to test that the api is working and a connection to the database has been established
     if httpMethod == 'GET' and path == '/health':
-        response = buildResponse(200, headers, {'message': 'Health Check', 'parameters': params})
+        response = buildResponse(200, headers, {'message': 'Health Check', 'parameters': queryParams})
 
     elif httpMethod == 'POST' and path == '/user/register':
 
@@ -45,7 +46,7 @@ def lambda_handler(event, context):
         if getUserByEmail(email):
             return buildResponse(401,headers,{'message' :'Email is already in use'})
         
-        response = createUser(nombre,email,contraseña)
+        response = createUser(nombre,email,contraseña,headers)
 
     elif httpMethod == 'POST' and path == '/user/login':
 
@@ -112,10 +113,26 @@ def lambda_handler(event, context):
         if result['verified'] == True:
             if getUserByEmail(result['email']) is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
-            response = updateUserByEmail(nombre,puntos,contraseña,result['email'])
+            response = updateUserByEmail(nombre,puntos,contraseña,result['email'],headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
-    
+
+    elif httpMethod == 'PATCH' and path == '/user/addPoints/{points}':
+        points = pathParams['points']
+
+        if 'access-token' in event_headers:
+            token = event_headers['access-token']
+        else:
+            return buildResponse(401,headers,{'message' :'No JWT Token'})
+        result = authenticateToken(token,sourceIp)
+        token = result['accessToken']
+        headers['access-token'] = token
+        id = result['id']
+        if result['verified'] == True:
+            response = addPoints(id,points,headers)
+        else:
+            response = buildResponse(403,headers,{'message' : result['message']})
+
     elif httpMethod == 'GET' and path == '/user':
         if 'access-token' in event_headers:
             token = event_headers['access-token']
@@ -132,9 +149,23 @@ def lambda_handler(event, context):
                 buildResponse(404, headers,{'message': 'User Not Found'})
             else:
                 response = buildResponse(200,headers,{'id':user[0],'nombre':user[2],'email':user[1],'puntos':user[3]})
-                logger.info(response)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
+
+    elif httpMethod == 'GET' and path == '/restaurants':
+        if 'access-token' in event_headers:
+            token = event_headers['access-token']
+        else:
+            return buildResponse(401,headers,{'message' :'No JWT Token'})
+
+        result = authenticateToken(token,sourceIp)
+        token = result['accessToken']
+        headers['access-token'] = token
+        if result['verified'] == True:
+            response = getRestaurants()
+        else:
+            response = buildResponse(403,headers,{'message' : result['message']})
+
     else:
         response = buildResponse(404, headers,{'message': 'Not Found'})
     return response

@@ -9,3 +9,4 @@ def buildResponse(statusCode,headers,body=None):
     if body is not None:
         responseObject['body'] = json.dumps(body,cls=CustomEnconder)
     return responseObject 
+
