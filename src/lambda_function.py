@@ -124,6 +124,7 @@ def lambda_handler(event, context):
             token = event_headers['access-token']
         else:
             return buildResponse(401,headers,{'message' :'No JWT Token'})
+        
         result = authenticateToken(token,sourceIp)
         token = result['accessToken']
         headers['access-token'] = token
@@ -161,6 +162,7 @@ def lambda_handler(event, context):
         result = authenticateToken(token,sourceIp)
         token = result['accessToken']
         headers['access-token'] = token
+
         if result['verified'] == True:
             response = getRestaurants()
         else:

@@ -62,6 +62,6 @@ def addPoints(id,points,headers):
             sql_string = "UPDATE usuarios SET puntos_usuario = puntos_usuario + %s WHERE id_usuario = %s"
             cur.execute(sql_string, (points,id))
             conn.commit()
-        return buildResponse(201,headers,{'message': '%s Points added to user %s' % id})
+        return buildResponse(201,headers,{'message': '%s Points added to user %s' % (points,id)})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
