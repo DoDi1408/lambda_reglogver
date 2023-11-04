@@ -44,8 +44,8 @@ def lambda_handler(event, context):
             return buildResponse(401, headers, {'message':'Empty body'})
         data = json.loads(message) ##message is the body of the api request
 
-        if 'username' in data and 'user_email' in data and 'user_password' in data:
-            nombre = data['username']
+        if 'user_name' in data and 'user_email' in data and 'user_password' in data:
+            nombre = data['user_name']
             email = data['user_email']
             contraseña = data['user_password']
         else:
@@ -105,9 +105,9 @@ def lambda_handler(event, context):
             return buildResponse(401, headers, {'message':'Empty body'})
         data = json.loads(message) ##message is the body of the api request
 
-        if 'access-token' in event_headers and 'username' in data and 'user_email' in data and 'user_password' in data:
+        if 'access-token' in event_headers and 'user_name' in data and 'user_email' in data and 'user_password' in data:
             token = event_headers['access-token']
-            nombre = data['username']
+            nombre = data['user_name']
             nuevo_email = data['user_email']
             contraseña = data['user_password']
         else:
@@ -158,7 +158,7 @@ def lambda_handler(event, context):
             if user is None:
                 response = buildResponse(404, headers,{'message': 'User Not Found'})
             else:
-                response = buildResponse(200,headers,{'id':user[0],'nombre':user[2],'email':user[1],'puntos':user[3]})
+                response = buildResponse(200,headers,{'user_id':user[0],'user_name':user[2],'user_email':user[1],'user_points':user[3]})
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
 

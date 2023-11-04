@@ -12,10 +12,10 @@ def getDonationsByUserId(id,headers):
             donaciones_json = []
             for donacion in donaciones:
                 promo_dict = {
-                    "id_usuario": donacion[0],
-                    "id_donacion": donacion[1],
-                    "fecha": donacion[2].strftime('%Y-%m-%d'),
-                    "cantidad" : donacion[3],
+                    "user_id": donacion[0],
+                    "donation_id": donacion[1],
+                    "donation_date": donacion[2].strftime('%Y-%m-%d'),
+                    "donation_quantity" : donacion[3],
                 }
                 donaciones_json.append(promo_dict)
             return buildResponse(200, headers, donaciones_json)

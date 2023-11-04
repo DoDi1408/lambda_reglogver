@@ -46,9 +46,10 @@ def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
             user = cur.fetchone()
 
             return buildResponse(200,headers,{'message': 'User with id: %s updated' % id,
-                                            'id':user[0],
+                                            'user_id':user[0],
                                             'user_email' : user[1],
-                                            'user_password':user[2]})
+                                            'username':user[2],
+                                            'user_points': user[3]})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
     

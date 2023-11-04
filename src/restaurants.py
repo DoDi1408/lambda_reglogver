@@ -13,11 +13,11 @@ def getRestaurants(headers):
             restaurantes_json = []
             for restaurante in restaurantes:
                 restaurante_dict = {
-                    "id": restaurante[0],
-                    "nombre": restaurante[1],
-                    "logo": restaurante[2],
-                    "latitud" : restaurante[3],
-                    "longitud" : restaurante[4]
+                    "establishment_id": restaurante[0],
+                    "establishment_name": restaurante[1],
+                    "establishment_logo": restaurante[2],
+                    "establishment_latitud" : restaurante[3],
+                    "establishment_longitud" : restaurante[4]
                 }
                 restaurantes_json.append(restaurante_dict)
             

@@ -13,12 +13,12 @@ def getRestaurantPromotions(id_restaurant,headers):
             promos_json = []
             for promo in promos:
                 promo_dict = {
-                    "id_establecimiento": promo[0],
-                    "id_promocion": promo[1],
-                    "nombre": promo[2],
-                    "imagen" : promo[3],
-                    "texto_descriptivo" : promo[4],
-                    "costo" : promo[5]
+                    "establishment_id": promo[0],
+                    "promotion_id": promo[1],
+                    "promotion_name": promo[2],
+                    "promotion_image" : promo[3],
+                    "promotion_descriptive_text" : promo[4],
+                    "promotion_price" : promo[5]
                 }
                 promos_json.append(promo_dict)
             return buildResponse(200, headers, promos_json)
@@ -35,12 +35,12 @@ def getPromotions(headers):
             promos_json = []
             for promo in promos:
                 promo_dict = {
-                    "id_establecimiento": promo[0],
-                    "id_promocion": promo[1],
-                    "nombre": promo[2],
-                    "imagen" : promo[3],
-                    "texto_descriptivo" : promo[4],
-                    "costo" : promo[5]
+                    "establishment_id": promo[0],
+                    "promotion_id": promo[1],
+                    "promotion_name": promo[2],
+                    "promotion_image" : promo[3],
+                    "promotion_descriptive_text" : promo[4],
+                    "promotion_price" : promo[5]
                 }
                 promos_json.append(promo_dict)
             return buildResponse(200, headers, promos_json)
