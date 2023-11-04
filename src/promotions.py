@@ -23,7 +23,7 @@ def getRestaurantPromotions(id_restaurant,headers):
                 promos_json.append(promo_dict)
             return buildResponse(200, headers, promos_json)
     except Exception as e:
-        return e
+        return buildResponse(500, headers,{'error': str(e)})
     
 def getPromotions(headers):
     try:

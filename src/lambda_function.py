@@ -4,6 +4,7 @@ from util import buildResponse
 from user import *
 from restaurants import *
 from promotions import *
+from donation import *
 #default headers:
 headers = {
             'Content-Type' :'application/json',
@@ -116,7 +117,7 @@ def lambda_handler(event, context):
         if result['verified'] == True:
             if getUserByEmail(result['email']) is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
-            response = updateUserByEmail(nombre,nuevo_email,contraseña,id,headers)
+            response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
 
@@ -184,16 +185,27 @@ def lambda_handler(event, context):
 
         if result['verified'] == True:
             if 'id' in queryParams:
-                restaurantes_json = []
                 promotions = getRestaurantPromotions(int(id),headers)
-                if isinstance(promotions, Exception):
-                    return buildResponse(500,headers,{'message': "Error retrieving restaurant with id %s" % id})
                 response = promotions
             else:
                 response = getPromotions(headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
 
+    elif httpMethod == 'GET' and path == '/donacion':
+        if 'access-token' in event_headers:
+            token = event_headers['access-token']
+        else:
+            return buildResponse(401,headers,{'message' :'No JWT Token'})
+
+        result = authenticateToken(token,sourceIp)
+        token = result['accessToken']
+        id = result['id']
+        headers['access-token'] = token
+        if result['verified'] == True:
+            response = getDonationsByUserId(id,headers)
+        else:
+            response = buildResponse(403,headers,{'message' : result['message']})
 
     else:
         response = buildResponse(404, headers,{'message': 'Not Found'})

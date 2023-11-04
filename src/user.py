@@ -33,7 +33,7 @@ def getUserByEmail(email):
         else:
             return None
 
-def updateUserByEmail(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
+def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
 
     contraseña_bytes = nueva_contraseña.encode('utf-8')
     hashed_password = hashlib.blake2b(contraseña_bytes).hexdigest()
@@ -50,8 +50,7 @@ def updateUserByEmail(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
             return buildResponse(200,headers,{'message': 'User with id: %s updated' % id,
                                             'id':user[0],
                                             'new_email' : user[1],
-                                            'new_name':user[2],
-                                            'new_password' : user[4]})
+                                            'new_name':user[2]})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
     
