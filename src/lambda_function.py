@@ -156,7 +156,7 @@ def lambda_handler(event, context):
         if result['verified'] == True:
             user = getUserByEmail(result['email'])
             if user is None:
-                buildResponse(404, headers,{'message': 'User Not Found'})
+                response = buildResponse(404, headers,{'message': 'User Not Found'})
             else:
                 response = buildResponse(200,headers,{'id':user[0],'nombre':user[2],'email':user[1],'puntos':user[3]})
         else:
