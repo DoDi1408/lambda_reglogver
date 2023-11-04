@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 #default headers:
 headers = {
             'Content-Type' :'application/json',
-            'Access-Control-Allow-Origin' : '*'
+            'Access-Control-Allow-Origin' : 'http://localhost:8081'
 }
 
 
@@ -115,13 +115,13 @@ def lambda_handler(event, context):
         
         result = authenticateToken(token,sourceIp)
 
-        token = result['accessToken']
         id = result['id']
-        headers['access-token'] = token
 
         if result['verified'] == True:
             if getUserByEmail(result['email']) is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
+            new_token = generateToken(nuevo_email,id,nombre,sourceIp)
+            headers['access-token'] = new_token
             response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
