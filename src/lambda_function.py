@@ -105,11 +105,11 @@ def lambda_handler(event, context):
             return buildResponse(401, headers, {'message':'Empty body'})
         data = json.loads(message) ##message is the body of the api request
 
-        if 'access-token' in event_headers and 'new_name' in data and 'new_email' in data and 'new_password' in data:
+        if 'access-token' in event_headers and 'username' in data and 'user_email' in data and 'user_password' in data:
             token = event_headers['access-token']
-            nombre = data['new_name']
-            nuevo_email = data['new_email']
-            contraseña = data['new_password']
+            nombre = data['username']
+            nuevo_email = data['user_email']
+            contraseña = data['user_password']
         else:
             return buildResponse(401,headers,{'message' :'All fields requiered'})
         
@@ -198,13 +198,13 @@ def lambda_handler(event, context):
             response = buildResponse(403,headers,{'message' : result['message']})
 
     elif httpMethod == 'GET' and path == '/donations':
-        logger.info("entre a donaciones.")
         if 'access-token' in event_headers:
             token = event_headers['access-token']
         else:
             return buildResponse(401,headers,{'message' :'No JWT Token'})
 
         result = authenticateToken(token,sourceIp)
+
         token = result['accessToken']
         id = result['id']
         headers['access-token'] = token
