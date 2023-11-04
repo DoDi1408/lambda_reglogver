@@ -24,6 +24,6 @@ def connect():
                 logger.error("ERROR: Unexpected error: Could not connect to MySQL instance.")
                 logger.error(e)
                 sys.exit(1)
-                return e
         
 conn = connect()
+conn.autocommit(True)

@@ -1,9 +1,6 @@
 from db import conn
 from util import buildResponse
-import logging
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 
 def getRestaurants(headers):
@@ -12,7 +9,6 @@ def getRestaurants(headers):
             sql_string = "SELECT * FROM establecimiento"
             cur.execute(sql_string, )
             restaurantes = cur.fetchall()
-            logger.info(restaurantes)
             # Construir una lista de diccionarios en el formato deseado
             restaurantes_json = []
             for restaurante in restaurantes:

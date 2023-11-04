@@ -13,7 +13,6 @@ def createUser(nombre,email,contraseña,headers):
         with conn.cursor() as cur:
             sql_string = "INSERT INTO usuarios (nombre_usuario, puntos_usuario, email_usuario, contraseña_usuario) VALUES (%s, 0, %s, %s)"
             cur.execute(sql_string, (nombre, email, hashed_password))
-            conn.commit()
 
             sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
             cur.execute(sql_string, (email,))
@@ -41,7 +40,6 @@ def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
         with conn.cursor() as cur:
             sql_string = "UPDATE usuarios SET nombre_usuario = %s, email_usuario = %s, contraseña_usuario = %s WHERE id_usuario = %s"
             cur.execute(sql_string,(nuevo_nombre,nuevo_email,hashed_password,id))
-            conn.commit()
 
             sql_string = "SELECT * FROM usuarios WHERE id_usuario = %s"
             cur.execute(sql_string, (id))
@@ -60,7 +58,6 @@ def addPoints(id,points,headers):
             
             sql_string = "UPDATE usuarios SET puntos_usuario = puntos_usuario + %s WHERE id_usuario = %s"
             cur.execute(sql_string, (points,id))
-            conn.commit()
         return buildResponse(201,headers,{'message': '%s Points added to user %s' % (points,id)})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})

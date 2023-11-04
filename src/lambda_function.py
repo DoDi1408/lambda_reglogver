@@ -5,6 +5,11 @@ from user import *
 from restaurants import *
 from promotions import *
 from donation import *
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
 #default headers:
 headers = {
             'Content-Type' :'application/json',
@@ -184,7 +189,7 @@ def lambda_handler(event, context):
         headers['access-token'] = token
 
         if result['verified'] == True:
-            if 'id' in queryParams:
+            if queryParams is not None and'id' in queryParams:
                 promotions = getRestaurantPromotions(int(id),headers)
                 response = promotions
             else:
@@ -192,7 +197,8 @@ def lambda_handler(event, context):
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
 
-    elif httpMethod == 'GET' and path == '/donacion':
+    elif httpMethod == 'GET' and path == '/donations':
+        logger.info("entre a donaciones.")
         if 'access-token' in event_headers:
             token = event_headers['access-token']
         else:
