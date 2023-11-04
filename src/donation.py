@@ -1,5 +1,6 @@
 from db import conn
 from util import buildResponse
+from datetime import datetime
 
 def getDonationsByUserId(id,headers):
     try:
@@ -13,7 +14,7 @@ def getDonationsByUserId(id,headers):
                 promo_dict = {
                     "id_usuario": donacion[0],
                     "id_donacion": donacion[1],
-                    "fecha": donacion[2],
+                    "fecha": donacion[2].strftime('%Y-%m-%d'),
                     "cantidad" : donacion[3],
                 }
                 donaciones_json.append(promo_dict)
