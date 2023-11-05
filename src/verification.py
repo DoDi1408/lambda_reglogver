@@ -1,9 +1,7 @@
-from email.message import EmailMessage
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 import logging
 from user import setUserVerified
-import boto3
 import os
 import jwt
 import smtplib
@@ -24,9 +22,9 @@ def sendVerificationEmail(destinatario,token):
         Equipo BAMX Rewards.
         </pre>"""
 
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 587)
-        server.ehlo()
+        server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
+        server.ehlo()
         server.login(remitente, os.environ['GMAIL_SECRET'])
         msg = MIMEText(email_body, 'html')
         server.sendmail(remitente, destinatario, msg.as_string())
