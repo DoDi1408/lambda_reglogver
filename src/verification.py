@@ -34,7 +34,7 @@ def sendVerificationEmail(destinatario,token):
 
         response = ses.send_raw_email(
             Source=remitente,
-            Destinations=[email],
+            Destinations=[destinatario],
             RawMessage={'Data': email.as_string()}
         )
         logger.info("Correo electrónico de verificación enviado de forma asincrónica")
