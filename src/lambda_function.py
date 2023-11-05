@@ -54,10 +54,9 @@ def lambda_handler(event, context):
         if getUserByEmail(email):
             return buildResponse(401,headers,{'message' :'Email is already in use'})
         
-        ##parte de verificacion
-        #verification_token = createVerifyToken(email,sourceIp)
- 
-        #sendVerificationEmail(email,verification_token)
+        #parte de verificacion
+        verification_token = createVerifyToken(email,sourceIp)
+        sendVerificationEmail(email,verification_token)
 
         response = createUser(nombre,email,contraseña,headers)
 
