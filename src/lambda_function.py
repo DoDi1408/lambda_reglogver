@@ -1,10 +1,11 @@
 import json
 from auth import *
-from util import buildResponse
+from util import buildResponse, renderHtmlResponse
 from user import *
 from restaurants import *
 from promotions import *
 from donation import *
+from verification import *
 import logging
 
 logger = logging.getLogger()
@@ -36,7 +37,7 @@ def lambda_handler(event, context):
     
     ##method to test that the api is working and a connection to the database has been established
     if httpMethod == 'GET' and path == '/health':
-        response = buildResponse(200, headers, {'message': 'Health Check', 'parameters': queryParams})
+        response = buildResponse(200, headers, {'message': 'Health Check', 'queryParams': queryParams,'pathParams': pathParams})
 
     elif httpMethod == 'POST' and path == '/user/register':
 
@@ -50,10 +51,13 @@ def lambda_handler(event, context):
             contraseña = data['user_password']
         else:
             return buildResponse(401,headers,{'message' :'All fields requiered'})
-        
         if getUserByEmail(email):
             return buildResponse(401,headers,{'message' :'Email is already in use'})
         
+        ##parte de verificacion
+        verification_token = createVerifyToken(email,sourceIp)
+        sendVerificationEmail(email,verification_token)
+
         response = createUser(nombre,email,contraseña,headers)
 
     elif httpMethod == 'POST' and path == '/user/login':
@@ -87,18 +91,31 @@ def lambda_handler(event, context):
         except Exception as e:
             return buildResponse(500,headers,{'message': "DB Server Error :("})
         
-    elif httpMethod == 'POST' and path == '/verify':
+    elif httpMethod == 'GET' and path == '/verify':
+        if queryParams is not None and 'token' in queryParams:
+            token = queryParams['token']
+            result = verifyEmail(token,sourceIp)
+        else:
+            return buildResponse(403,headers,{'message': "no hay un token en esta llamada"})
         
-        if 'access-token' in event_headers:
-            token = event_headers['access-token']
+        if result['verified'] == True:
+            return renderHtmlResponse("Verificación Exitosa", "Tu correo electrónico ha sido verificado con éxito.")
+        else:
+            return renderHtmlResponse("Error de Verificación", result['message'])
+
+    elif httpMethod == 'POST' and path == '/verify':
+        if message is None:
+            return buildResponse(401, headers, {'message':'Empty body'})
+        data = json.loads(message) ##message is the body of the api request
+
+        if 'user_email' in data:
+            email = data['user_email']
         else:
             return buildResponse(401,headers,{'message' :'All fields requiered'})
         
-        body = authenticateToken(token,sourceIp)
-        if body['verified'] == True:
-            response = buildResponse(200,headers,body)
-        else:
-            response = buildResponse(400,headers,body)
+        verification_token = createVerifyToken(email,sourceIp)
+        sendVerificationEmail(email,verification_token)
+
     elif httpMethod == 'PATCH' and path == '/user':
 
         if message is None:
@@ -190,6 +207,7 @@ def lambda_handler(event, context):
 
         if result['verified'] == True:
             if queryParams is not None and'id' in queryParams:
+                id = queryParams['id']
                 promotions = getRestaurantPromotions(int(id),headers)
                 response = promotions
             else:

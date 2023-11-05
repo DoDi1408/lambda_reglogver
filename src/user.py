@@ -14,9 +14,6 @@ def createUser(nombre,email,contraseña,headers):
             sql_string = "INSERT INTO usuarios (nombre_usuario, puntos_usuario, email_usuario, contraseña_usuario) VALUES (%s, 0, %s, %s)"
             cur.execute(sql_string, (nombre, email, hashed_password))
 
-            sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
-            cur.execute(sql_string, (email,))
-
         return buildResponse(201,headers,{'message': 'User created: %s' % nombre})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
@@ -53,6 +50,20 @@ def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
     
+def setUserVerified(email):
+    try:
+        with conn.cursor() as cur:
+            sql_string = "UPDATE usuarios SET verificado = true WHERE email_usuario = %s"
+            cur.execute(sql_string,(email,))
+            return {
+                'verified' : True,
+                'message' : "Successfully verified user in database "
+            }
+    except Exception as e:
+        return {
+                'verified' : False,
+                'message' : e
+            }
 def addPoints(id,points,headers):
     try:
         with conn.cursor() as cur:

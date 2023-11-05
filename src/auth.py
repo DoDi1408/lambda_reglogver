@@ -12,7 +12,6 @@ def generateToken(email,id,nombre,sourceIp):
         token_data = {'email': email,'id':id,'nombre':nombre,'sourceIp':sourceIp,'exp': datetime.utcnow() + timedelta(hours=1)}
         token = jwt.encode(token_data, os.environ['JWT_SECRET'], algorithm='HS256')
     except Exception as e:
-        logger.info(e)
         return None
     return token
 
