@@ -19,9 +19,9 @@ def sendVerificationEmail(destinatario,token):
     </pre>"""
 
     msg = MIMEText(email_body ,'html')
-
-    email.set_content(msg)
     email = EmailMessage()
+    
+    email.set_content(msg)
     email["Subject"] = "Verificación de tu cuenta BAMX Rewards"
     email["From"] = remitente
     email["To"] = destinatario
