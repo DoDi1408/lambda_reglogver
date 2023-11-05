@@ -18,17 +18,14 @@ def sendVerificationEmail(destinatario,token):
     Equipo BAMX Rewards.
     </pre>"""
 
-    msg = MIMEText(email_body ,'html')
-    email = EmailMessage()
-    
-    email.set_content(msg)
-    email["Subject"] = "Verificación de tu cuenta BAMX Rewards"
-    email["From"] = remitente
-    email["To"] = destinatario
-    smtp = smtplib.SMTP_SSL("smtp.gmail.com")
-    smtp.login(remitente, os.environ['GMAIL_SECRET'])
-    smtp.sendmail(remitente, destinatario, email.as_string())
-    smtp.quit()
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.ehlo()
+    server.starttls()
+    server.login(remitente, os.environ['GMAIL_SECRET'])
+    server.sendmail(remitente, destinatario, msg="Subject: Test\n\n This is a test from lambda")
+    server.close()
+    #msg = MIMEText(email_body ,'html')
+
 
 def createVerifyToken(email,sourceIp):
     try:

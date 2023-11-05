@@ -56,6 +56,7 @@ def lambda_handler(event, context):
         
         ##parte de verificacion
         verification_token = createVerifyToken(email,sourceIp)
+        logger.info(verification_token)
         sendVerificationEmail(email,verification_token)
 
         response = createUser(nombre,email,contraseña,headers)
