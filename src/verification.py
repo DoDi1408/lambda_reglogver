@@ -24,20 +24,13 @@ def sendVerificationEmail(destinatario,token):
         Equipo BAMX Rewards.
         </pre>"""
 
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 587)
+        server.ehlo()
+        server.starttls()
+        server.login(remitente, os.environ['GMAIL_SECRET'])
         msg = MIMEText(email_body, 'html')
-        email = EmailMessage()
-        email.set_content(msg)
-        email["Subject"] = "Verificación de tu cuenta BAMX Rewards"
-        email["From"] = remitente
-        email["To"] = destinatario
-        ses = boto3.client('ses', region_name='us-east-2')
-
-        response = ses.send_raw_email(
-            Source=remitente,
-            Destinations=[destinatario],
-            RawMessage={'Data': email.as_string()}
-        )
-        logger.info("Correo electrónico de verificación enviado de forma asincrónica")
+        server.sendmail(remitente, destinatario, msg.as_string())
+        server.quit()
     except Exception as e:
         logger.error(f"Error al enviar el correo electrónico de verificación: {str(e)}")
 

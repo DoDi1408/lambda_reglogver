@@ -1,4 +1,5 @@
 import json
+import boto3
 from auth import *
 from util import buildResponse, renderHtmlResponse
 from user import *
@@ -56,6 +57,7 @@ def lambda_handler(event, context):
         
         ##parte de verificacion
         verification_token = createVerifyToken(email,sourceIp)
+ 
         sendVerificationEmail(email,verification_token)
 
         response = createUser(nombre,email,contraseña,headers)
