@@ -100,10 +100,10 @@ def lambda_handler(event, context):
             return buildResponse(401,headers,{'message': "No token"})
         
         logger.info(result)
-        if result['verified'] == True:
+        if result == True:
             return renderHtmlResponse("Verificación Exitosa", "Tu correo electrónico ha sido verificado con éxito.")
         else:
-            return renderHtmlResponse("Error de Verificación", result['message'])
+            return renderHtmlResponse("Error de Verificación", "Ha habido un error verificando tu cuenta")
 
     elif httpMethod == 'POST' and path == '/verify':
         if message is None:
