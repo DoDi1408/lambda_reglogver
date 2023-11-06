@@ -45,7 +45,7 @@ def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
             return buildResponse(200,headers,{'message': 'User with id: %s updated' % id,
                                             'user_id':user[0],
                                             'user_email' : user[1],
-                                            'username':user[2],
+                                            'user_name':user[2],
                                             'user_points': user[3]})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})

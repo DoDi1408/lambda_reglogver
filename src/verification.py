@@ -6,13 +6,18 @@ from user import setUserVerified
 import os
 import jwt
 import smtplib
+import boto3
+
+# Create an SES client
+ses_client = boto3.client('ses')
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def sendVerificationEmail(destinatario,token):
     try:
-        remitente = "bamxa535@gmail.com"
+        remitente = "your_verified_email@example.com"  # Replace with your verified SES email
+
         verification_link = f"https://tf0mj1svb3.execute-api.us-east-2.amazonaws.com/prod/verify?token={token}"
 
         email_body = f"""<pre>
@@ -22,18 +27,15 @@ def sendVerificationEmail(destinatario,token):
         Equipo BAMX Rewards.
         </pre>"""
 
-        msg = MIMEMultipart()
-        msg['From'] = remitente
-        msg['To'] = destinatario
-        msg['Subject'] = 'Verificacion BAMX Rewards'
-        msg.attach(MIMEText(email_body, 'html'))
+        response = ses_client.send_email(
+            Source=remitente,
+            Destination={'ToAddresses': [destinatario]},
+            Message={
+                'Subject': {'Data': 'Verificacion BAMX Rewards'},
+                'Body': {'Html': {'Data': email_body}}
+            }
+        )
 
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.ehlo()
-        server.login(remitente, "xtjvuhwqejgktccb")
-        server.sendmail(remitente, destinatario, msg.as_string())
-        server.quit()
     except Exception as e:
         logger.error(f"Error al enviar el correo electrónico de verificación: {str(e)}")
 
