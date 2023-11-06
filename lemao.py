@@ -2,9 +2,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-
+destinatario = "ro.chavez.5454@gmail.com"
 remitente = "bamxa535@gmail.com"
-verification_link = f"https://tf0mj1svb3.execute-api.us-east-2.amazonaws.com/prod/verify?token={token}"
+verification_link = f"https://tf0mj1svb3.execute-api.us-east-2.amazonaws.com/prod/verify?token=lemao"
 
 email_body = f"""<pre>
 Bienvenido! Tu cuenta ha sido creada.

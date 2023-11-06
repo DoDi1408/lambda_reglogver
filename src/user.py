@@ -19,6 +19,16 @@ def createUser(nombre,email,contraseña,headers):
         return buildResponse(500, headers,{'error': str(e)})
     #tratar errores
 
+def deleteUser (email,headers):
+    try:
+
+        with conn.cursor() as cur:
+            sql_string = "DELETE FROM usuarios WHERE email_usuario = %s"
+            cur.execute(sql_string, (email,))
+        return buildResponse(201,headers,{'message': 'User with email: %s deleted' % email})
+    except Exception as e:
+        return buildResponse(500, headers,{'error': str(e)})
+    
 def getUserByEmail(email):
     with conn.cursor() as cur:
         sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"

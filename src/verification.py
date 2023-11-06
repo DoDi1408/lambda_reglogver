@@ -14,9 +14,9 @@ ses_client = boto3.client('ses',region_name='us-east-2')
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def sendVerificationEmail(destinatario,token):
+def sendVerificationEmail(receiver,token):
     try:
-        remitente = "bamxa535@gmail.com"  # Replace with your verified SES email
+        sender = "bamxa535@gmail.com" 
 
         verification_link = f"https://tf0mj1svb3.execute-api.us-east-2.amazonaws.com/prod/verify?token={token}"
 
@@ -28,10 +28,10 @@ def sendVerificationEmail(destinatario,token):
         </pre>"""
 
         response = ses_client.send_email(
-            Source=remitente,
-            Destination={'ToAddresses': [destinatario]},
+            Source=sender,
+            Destination={'ToAddresses': [receiver]},
             Message={
-                'Subject': {'Charset': 'UTF-8','Data': 'Verificacion BAMX Rewards'},
+                'Subject': {'Charset': 'UTF-8','Data': 'An Interesting Title'},
                 'Body': {'Html': {'Data': email_body}}
             }
         )

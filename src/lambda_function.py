@@ -52,7 +52,7 @@ def lambda_handler(event, context):
         else:
             return buildResponse(401,headers,{'message' :'All fields requiered'})
         if getUserByEmail(email):
-            return buildResponse(401,headers,{'message' :'Email is already in use'})
+            return buildResponse(403,headers,{'message' :'Email is already in use'})
         
         #parte de verificacion
         verification_token = createVerifyToken(email,sourceIp)
@@ -96,8 +96,9 @@ def lambda_handler(event, context):
             token = queryParams['token']
             result = verifyEmail(token,sourceIp)
         else:
-            return buildResponse(403,headers,{'message': "no hay un token en esta llamada"})
+            return buildResponse(401,headers,{'message': "No token"})
         
+        logger.info(result)
         if result['verified'] == True:
             return renderHtmlResponse("Verificación Exitosa", "Tu correo electrónico ha sido verificado con éxito.")
         else:
@@ -142,7 +143,18 @@ def lambda_handler(event, context):
             response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
-
+    elif httpMethod == 'DELETE' and path == '/user':
+        if 'access-token' in event_headers:
+            token = event_headers['access-token']
+        else:
+            return buildResponse(401,headers,{'message' :'No JWT Token'})
+        
+        result = authenticateToken(token,sourceIp)
+        if result['verified'] == True:
+            response = deleteUser(result['email'],headers)
+        else:
+            response = buildResponse(403,headers,{'message' : result['message']})
+    
     elif httpMethod == 'PATCH' and path == '/user/addPoints/{points}':
         points = pathParams['points']
 
@@ -220,8 +232,9 @@ def lambda_handler(event, context):
             token = event_headers['access-token']
         else:
             return buildResponse(401,headers,{'message' :'No JWT Token'})
-
+        
         result = authenticateToken(token,sourceIp)
+        logger.info(result)
 
         token = result['accessToken']
         id = result['id']
