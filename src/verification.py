@@ -16,7 +16,7 @@ logger.setLevel(logging.INFO)
 
 def sendVerificationEmail(destinatario,token):
     try:
-        remitente = "your_verified_email@example.com"  # Replace with your verified SES email
+        remitente = "bamxa535@gmail.com"  # Replace with your verified SES email
 
         verification_link = f"https://tf0mj1svb3.execute-api.us-east-2.amazonaws.com/prod/verify?token={token}"
 
