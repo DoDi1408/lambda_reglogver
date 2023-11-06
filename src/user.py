@@ -61,13 +61,31 @@ def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
                                             'user_points': user[3]})
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
+
+def updateUserByIdNoPassword(nuevo_nombre, nuevo_email,id,headers):
+
+    try:
+        with conn.cursor() as cur:
+            sql_string = "UPDATE usuarios SET nombre_usuario = %s, email_usuario = %s WHERE id_usuario = %s"
+            cur.execute(sql_string,(nuevo_nombre,nuevo_email,id))
+
+            sql_string = "SELECT * FROM usuarios WHERE id_usuario = %s"
+            cur.execute(sql_string, (id))
+            user = cur.fetchone()
+
+            return buildResponse(200,headers,{'message': 'User with id: %s updated' % id,
+                                            'user_id':user[0],
+                                            'user_email' : user[1],
+                                            'user_name':user[2],
+                                            'user_points': user[3]})
+    except Exception as e:
+        return buildResponse(500, headers,{'error': str(e)})
     
 def setUserVerified(email):
     try:
         with conn.cursor() as cur:
             sql_string = "UPDATE usuarios SET verificado = true WHERE email_usuario = %s"
             cur.execute(sql_string,(email,))
-            logger.info("ejecutre ")
             return {
                 'verified' : True,
                 'message' : "Successfully verified user in database "

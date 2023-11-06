@@ -50,10 +50,7 @@ def verifyEmail(token,sourceIp):
         decoded = jwt.decode(token, os.environ['JWT_SECRET'], algorithms=['HS256'])
         email = decoded.get('email')
         tokenIp = decoded.get('sourceIp')
-        logger.info(email)
-        logger.info(tokenIp)
         if sourceIp == tokenIp:
-            logger.info("LA IP ES LA MISMA")
             return setUserVerified(email)
         else:
             return {

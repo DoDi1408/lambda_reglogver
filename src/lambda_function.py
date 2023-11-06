@@ -83,7 +83,7 @@ def lambda_handler(event, context):
                         del stored_password_hash
                         user = getUserByEmail(email)
                         accessToken = generateToken(user[1],user[0],user[2],sourceIp)
-                        response = buildResponse(200,headers, {'access-token': accessToken})
+                        response = buildResponse(200,headers, {'access-token': accessToken, 'verified': user[5]})
                     else:
                         return buildResponse(403,headers,{'message': 'Invalid Credentials'})
                 else:
@@ -94,12 +94,10 @@ def lambda_handler(event, context):
     elif httpMethod == 'GET' and path == '/verify':
         if queryParams is not None and 'token' in queryParams:
             token = queryParams['token']
-            logger.info(token)
             result = verifyEmail(token,sourceIp)
         else:
             return buildResponse(401,headers,{'message': "No token"})
         
-        logger.info(result)
         if result['verified'] == True:
             return renderHtmlResponse("Verificación Exitosa", "Tu correo electrónico ha sido verificado con éxito.")
         else:
@@ -124,24 +122,35 @@ def lambda_handler(event, context):
             return buildResponse(401, headers, {'message':'Empty body'})
         data = json.loads(message) ##message is the body of the api request
 
-        if 'access-token' in event_headers and 'user_name' in data and 'user_email' in data and 'user_password' in data:
+        if 'access-token' in event_headers:
             token = event_headers['access-token']
+
+        headers['access-token'] = token
+            
+        if 'user_name' in data and 'user_email' in data:
             nombre = data['user_name']
             nuevo_email = data['user_email']
-            contraseña = data['user_password']
         else:
-            return buildResponse(401,headers,{'message' :'All fields requiered'})
+            return buildResponse(401,headers,{'message':'All fields requiered'})
         
         result = authenticateToken(token,sourceIp)
-
         id = result['id']
 
         if result['verified'] == True:
-            if getUserByEmail(result['email']) is None:
-                return buildResponse(404,headers,{'message' :'Not Found in Database'})
             new_token = generateToken(nuevo_email,id,nombre,sourceIp)
-            headers['access-token'] = new_token
-            response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
+            user = getUserByEmail(result['email'])
+            if user is None:
+                return buildResponse(404,headers,{'message' :'Not Found in Database'})
+            
+            if 'user_password' in data:
+                contraseña = data['user_password']
+                if contraseña == "":
+                    return buildResponse(401,headers,{'message':'La contraseña esta vacia'})
+                response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
+                
+            else:
+                headers['access-token'] = new_token
+                response = updateUserByIdNoPassword(nombre,nuevo_email,id,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
     elif httpMethod == 'DELETE' and path == '/user':
