@@ -1,8 +1,10 @@
 from db import conn
 import hashlib
 from util import buildResponse
+import logging
 
-
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 
@@ -65,6 +67,7 @@ def setUserVerified(email):
         with conn.cursor() as cur:
             sql_string = "UPDATE usuarios SET verificado = true WHERE email_usuario = %s"
             cur.execute(sql_string,(email,))
+            logger.info("ejecutre ")
             return {
                 'verified' : True,
                 'message' : "Successfully verified user in database "

@@ -94,6 +94,7 @@ def lambda_handler(event, context):
     elif httpMethod == 'GET' and path == '/verify':
         if queryParams is not None and 'token' in queryParams:
             token = queryParams['token']
+            logger.info(token)
             result = verifyEmail(token,sourceIp)
         else:
             return buildResponse(401,headers,{'message': "No token"})
@@ -234,7 +235,6 @@ def lambda_handler(event, context):
             return buildResponse(401,headers,{'message' :'No JWT Token'})
         
         result = authenticateToken(token,sourceIp)
-        logger.info(result)
 
         token = result['accessToken']
         id = result['id']

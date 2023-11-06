@@ -1,11 +1,8 @@
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import logging
 from user import setUserVerified
 import os
 import jwt
-import smtplib
 import boto3
 
 # Create an SES client
@@ -53,7 +50,10 @@ def verifyEmail(token,sourceIp):
         decoded = jwt.decode(token, os.environ['JWT_SECRET'], algorithms=['HS256'])
         email = decoded.get('email')
         tokenIp = decoded.get('sourceIp')
+        logger.info(email)
+        logger.info(tokenIp)
         if sourceIp == tokenIp:
+            logger.info("LA IP ES LA MISMA")
             setUserVerified(email)
         else:
             return{
