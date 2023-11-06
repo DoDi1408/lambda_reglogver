@@ -9,7 +9,7 @@ import smtplib
 import boto3
 
 # Create an SES client
-ses_client = boto3.client('ses')
+ses_client = boto3.client('ses',region_name='us-east-2')
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -31,7 +31,7 @@ def sendVerificationEmail(destinatario,token):
             Source=remitente,
             Destination={'ToAddresses': [destinatario]},
             Message={
-                'Subject': {'Data': 'Verificacion BAMX Rewards'},
+                'Subject': {'Charset': 'UTF-8','Data': 'Verificacion BAMX Rewards'},
                 'Body': {'Html': {'Data': email_body}}
             }
         )
