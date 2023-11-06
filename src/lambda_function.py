@@ -64,6 +64,7 @@ def lambda_handler(event, context):
 
         if message is None:
             return buildResponse(401, headers, {'message':'Empty body'})
+        logger.info(message)
         data = json.loads(message) ##message is the body of the api request
 
         if 'user_email' in data and 'user_password' in data:
@@ -147,7 +148,7 @@ def lambda_handler(event, context):
                 if contraseña == "":
                     return buildResponse(401,headers,{'message':'La contraseña esta vacia'})
                 response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
-                
+
             else:
                 headers['access-token'] = new_token
                 response = updateUserByIdNoPassword(nombre,nuevo_email,id,headers)
