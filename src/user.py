@@ -68,9 +68,15 @@ def setUserVerified(email):
             sql_string = "UPDATE usuarios SET verificado = true WHERE email_usuario = %s"
             cur.execute(sql_string,(email,))
             logger.info("ejecutre ")
-            return True
+            return {
+                'verified' : True,
+                'message' : "Successfully verified user in database "
+            }
     except Exception as e:
-        return False
+        return {
+                'verified' : False,
+                'message' : e
+            }
 def addPoints(id,points,headers):
     try:
         with conn.cursor() as cur:

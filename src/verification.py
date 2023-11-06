@@ -54,10 +54,19 @@ def verifyEmail(token,sourceIp):
         logger.info(tokenIp)
         if sourceIp == tokenIp:
             logger.info("LA IP ES LA MISMA")
-            setUserVerified(email)
+            return setUserVerified(email)
         else:
-            return False
+            return {
+                'verified' : False,
+                'message' : 'Ip Not Valid',
+            }
     except jwt.ExpiredSignatureError:
-        return False
+        return {
+            'verified': False,
+            'message': 'Token Expired',
+        }
     except jwt.DecodeError:
-        return False
+        return {
+            'verified': False,
+            'message': 'Invalid Token',
+        }
