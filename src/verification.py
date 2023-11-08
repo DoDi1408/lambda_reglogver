@@ -28,7 +28,7 @@ def sendVerificationEmail(receiver,token):
             Source=sender,
             Destination={'ToAddresses': [receiver]},
             Message={
-                'Subject': {'Charset': 'UTF-8','Data': 'An Interesting Title'},
+                'Subject': {'Charset': 'UTF-8','Data': 'Verificacion de tu cuenta BAMX.'},
                 'Body': {'Html': {'Data': email_body}}
             }
         )
