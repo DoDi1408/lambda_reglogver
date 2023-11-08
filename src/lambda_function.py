@@ -142,12 +142,9 @@ def lambda_handler(event, context):
             if user is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
             
-            if 'user_password' in data:
+            if 'user_password' in data and data['user_password'] != "":
                 contraseña = data['user_password']
-                if contraseña == "":
-                    response =  updateUserByIdNoPassword(nombre,nuevo_email,id,headers)
                 response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
-
             else:
                 headers['access-token'] = new_token
                 response = updateUserByIdNoPassword(nombre,nuevo_email,id,headers)
