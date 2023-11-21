@@ -17,6 +17,7 @@ def generateToken(email,id,nombre,sourceIp):
 
 def authenticateToken(token,sourceIp):
     try:
+        ## CAMBIAR os.environ['JWT_SECRET']
         decoded = jwt.decode(token, os.environ['JWT_SECRET'], algorithms=['HS256'])
         expiration_timestamp = decoded.get('exp', 0)  # Obtiene el tiempo de expiración del token
         email = decoded.get('email')

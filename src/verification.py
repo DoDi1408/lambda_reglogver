@@ -38,6 +38,8 @@ def sendVerificationEmail(receiver,token):
 
 
 def createVerifyToken(email,sourceIp):
+    if sourceIp is None:
+        return None
     try:
         token_data = {'email':email,'sourceIp':sourceIp,'exp': datetime.utcnow() + timedelta(hours=6)}
         token = jwt.encode(token_data, os.environ['JWT_SECRET'], algorithm='HS256')

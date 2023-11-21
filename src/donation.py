@@ -1,6 +1,5 @@
 from db import conn
 from util import buildResponse
-from datetime import datetime
 
 def getDonationsByUserId(id,headers):
     try:

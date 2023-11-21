@@ -83,6 +83,7 @@ def lambda_handler(event, context):
                         del stored_password_hash
                         user = getUserByEmail(email)
                         accessToken = generateToken(user[1],user[0],user[2],sourceIp)
+                        ##HACER UN IF PARA QUE SI VERIFIED ES FALSO, NO ENVIAR UN ACCESS-TOKEN.
                         response = buildResponse(200,headers, {'access-token': accessToken, 'verified': user[5]})
                     else:
                         return buildResponse(403,headers,{'message': 'Invalid Credentials'})
@@ -124,8 +125,6 @@ def lambda_handler(event, context):
 
         if 'access-token' in event_headers:
             token = event_headers['access-token']
-
-        headers['access-token'] = token
             
         if 'user_name' in data and 'user_email' in data:
             nombre = data['user_name']
@@ -135,18 +134,19 @@ def lambda_handler(event, context):
         
         result = authenticateToken(token,sourceIp)
         id = result['id']
-
+        
         if result['verified'] == True:
             new_token = generateToken(nuevo_email,id,nombre,sourceIp)
+            headers['access-token'] = new_token
+
             user = getUserByEmail(result['email'])
+
             if user is None:
                 return buildResponse(404,headers,{'message' :'Not Found in Database'})
-            
             if 'user_password' in data and data['user_password'] != "":
                 contraseña = data['user_password']
                 response = updateUserById(nombre,nuevo_email,contraseña,id,headers)
             else:
-                headers['access-token'] = new_token
                 response = updateUserByIdNoPassword(nombre,nuevo_email,id,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})

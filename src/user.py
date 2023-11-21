@@ -32,26 +32,28 @@ def deleteUser (email,headers):
         return buildResponse(500, headers,{'error': str(e)})
     
 def getUserByEmail(email):
-    with conn.cursor() as cur:
-        sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
-        cur.execute(sql_string, (email,))
-        user = cur.fetchone()
-        if user:
-            return user
-        else:
-            return None
+    try:
+        with conn.cursor() as cur:
+            sql_string = "SELECT * FROM usuarios WHERE email_usuario = %s"
+            cur.execute(sql_string, (email,))
+            user = cur.fetchone()
+            if user:
+                return user
+            else:
+                return None
+    except Exception as e:
+        return None
 
 def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
-
     contraseña_bytes = nueva_contraseña.encode('utf-8')
     hashed_password = hashlib.blake2b(contraseña_bytes).hexdigest()
     try:
         with conn.cursor() as cur:
             sql_string = "UPDATE usuarios SET nombre_usuario = %s, email_usuario = %s, contraseña_usuario = %s WHERE id_usuario = %s"
-            cur.execute(sql_string,(nuevo_nombre,nuevo_email,hashed_password,id))
+            cur.execute(sql_string,(nuevo_nombre,nuevo_email,hashed_password,id,))
 
             sql_string = "SELECT * FROM usuarios WHERE id_usuario = %s"
-            cur.execute(sql_string, (id))
+            cur.execute(sql_string, (id,))
             user = cur.fetchone()
 
             return buildResponse(200,headers,{'message': 'User with id: %s updated' % id,
@@ -63,14 +65,13 @@ def updateUserById(nuevo_nombre, nuevo_email,nueva_contraseña,id,headers):
         return buildResponse(500, headers,{'error': str(e)})
 
 def updateUserByIdNoPassword(nuevo_nombre, nuevo_email,id,headers):
-
     try:
         with conn.cursor() as cur:
             sql_string = "UPDATE usuarios SET nombre_usuario = %s, email_usuario = %s WHERE id_usuario = %s"
             cur.execute(sql_string,(nuevo_nombre,nuevo_email,id))
 
             sql_string = "SELECT * FROM usuarios WHERE id_usuario = %s"
-            cur.execute(sql_string, (id))
+            cur.execute(sql_string, (id,))
             user = cur.fetchone()
 
             return buildResponse(200,headers,{'message': 'User with id: %s updated' % id,
@@ -88,7 +89,7 @@ def setUserVerified(email):
             cur.execute(sql_string,(email,))
             return {
                 'verified' : True,
-                'message' : "Successfully verified user in database "
+                'message' : "Successfully verified user in database"
             }
     except Exception as e:
         return {
