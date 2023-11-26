@@ -20,3 +20,13 @@ def getDonationsByUserId(id,headers):
             return buildResponse(200, headers, donaciones_json)
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
+    
+def createDonation(id,amount):
+    try:
+        with conn.cursor() as cur:
+            sql_string = "INSERT INTO donacion (id_usuario, fecha, cantidad) VALUES (%s, CURRENT_TIMESTAMP(), %s)"
+            cur.execute(sql_string, (id,amount))
+            return True
+    except Exception:
+        return False
+    

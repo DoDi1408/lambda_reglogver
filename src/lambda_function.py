@@ -6,6 +6,7 @@ from restaurants import *
 from promotions import *
 from donation import *
 from verification import *
+from payment import *
 import logging
 
 logger = logging.getLogger()
@@ -134,7 +135,7 @@ def lambda_handler(event, context):
         
         result = authenticateToken(token,sourceIp)
         id = result['id']
-        
+
         if result['verified'] == True:
             new_token = generateToken(nuevo_email,id,nombre,sourceIp)
             headers['access-token'] = new_token
@@ -174,10 +175,38 @@ def lambda_handler(event, context):
         token = result['accessToken']
         headers['access-token'] = token
         id = result['id']
+
         if result['verified'] == True:
+            createDonation(id,points)
             response = addPoints(id,points,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
+
+    elif httpMethod == 'POST' and path == '/payment-sheet':
+        if 'access-token' in event_headers:
+            token = event_headers['access-token']
+        else:
+            return buildResponse(401,headers,{'message' :'No JWT Token'})
+        
+        if message is None:
+            return buildResponse(401, headers, {'message':'Empty body'})
+        
+        data = json.loads(message) ##message is the body of the api request
+
+        if 'amount' in data:
+            amount = data['amount']
+        else:
+            return buildResponse(401,headers,{'message' :'All fields requiered'})
+        
+        result = authenticateToken(token,sourceIp)
+        token = result['accessToken']
+        email = result['email']
+        headers['access-token'] = token
+
+        if result['verified'] == True:
+            response = payment_sheet(headers,amount,email)
+        else:
+            response = buildResponse(403,headers, {'message': result['message']})
 
     elif httpMethod == 'GET' and path == '/user':
         if 'access-token' in event_headers:
