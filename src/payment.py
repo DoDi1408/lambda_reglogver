@@ -11,7 +11,7 @@ def payment_sheet(headers,cantidad,email):
     ephemeralKey = stripe.EphemeralKey.create( customer=customer['id'], stripe_version='2023-10-16',)
 
     paymentIntent = stripe.PaymentIntent.create(
-        amount=cantidad * 100,
+        amount=int(cantidad) * 100,
         currency='mxn',
         customer=customer['id'],
         automatic_payment_methods={'enabled': True,},)
