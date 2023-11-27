@@ -84,7 +84,6 @@ def lambda_handler(event, context):
                         del stored_password_hash
                         user = getUserByEmail(email)
                         accessToken = generateToken(user[1],user[0],user[2],sourceIp)
-                        ##HACER UN IF PARA QUE SI VERIFIED ES FALSO, NO ENVIAR UN ACCESS-TOKEN.
                         if user[5] == 1:
                             response = buildResponse(200,headers, {'access-token': accessToken, 'verified': user[5]})
                         else:
@@ -106,7 +105,7 @@ def lambda_handler(event, context):
         if result['verified'] == True:
             return renderHtmlResponse("Verificación Exitosa", "Tu correo electrónico ha sido verificado con éxito.")
         else:
-            return renderHtmlResponse("Error de Verificación", "Ha habido un error verificando tu cuenta")
+            return renderHtmlResponse("Error de Verificación", result['message'])
 
     elif httpMethod == 'POST' and path == '/verify':
         if message is None:
