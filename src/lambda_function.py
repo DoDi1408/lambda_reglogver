@@ -64,14 +64,14 @@ def lambda_handler(event, context):
     elif httpMethod == 'POST' and path == '/user/login':
 
         if message is None:
-            return buildResponse(401, headers, {'message':'Empty body'})
+            return buildResponse(400, headers, {'message':'Empty body'})
         data = json.loads(message) ##message is the body of the api request
 
         if 'user_email' in data and 'user_password' in data:
             email = data['user_email']
             contraseña = data['user_password']
         else:
-            return buildResponse(401,headers,{'message' :'All fields requiered'})
+            return buildResponse(400,headers,{'message' :'All fields requiered'})
         
         try:
             with conn.cursor() as cur:
@@ -85,11 +85,14 @@ def lambda_handler(event, context):
                         user = getUserByEmail(email)
                         accessToken = generateToken(user[1],user[0],user[2],sourceIp)
                         ##HACER UN IF PARA QUE SI VERIFIED ES FALSO, NO ENVIAR UN ACCESS-TOKEN.
-                        response = buildResponse(200,headers, {'access-token': accessToken, 'verified': user[5]})
+                        if user[5] == 1:
+                            response = buildResponse(200,headers, {'access-token': accessToken, 'verified': user[5]})
+                        else:
+                            response = buildResponse(403,headers, {'verified': user[5],'message':'email not verified' })
                     else:
-                        return buildResponse(403,headers,{'message': 'Invalid Credentials'})
+                        return buildResponse(401,headers,{'message': 'Invalid Credentials'})
                 else:
-                    return buildResponse(403,headers,{'message': 'Invalid Credentials'})
+                    return buildResponse(401,headers,{'message': 'Invalid Credentials'})
         except Exception as e:
             return buildResponse(500,headers,{'message': "DB Server Error :("})
         
