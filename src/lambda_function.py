@@ -184,7 +184,6 @@ def lambda_handler(event, context):
             response = buildResponse(403,headers,{'message' : result['message']})
 
     elif httpMethod == 'POST' and path =='/webhook':
-        eventStripe = None
         data = json.loads(message)
         sig_header = event_headers['STRIPE_SIGNATURE']
 
