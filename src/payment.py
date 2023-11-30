@@ -29,7 +29,7 @@ def payment_sheet(headers,cantidad,email):
 def addDonation(data,sig_header,headers):
     try:
         event = stripe.Webhook.construct_event(
-                data, sig_header)
+                data, sig_header,secret='whsec_reyjErYwNpM2mHuWZ3PC7DXeonUllNqF')
     except ValueError as e:
         # Invalid payload
         return  buildResponse(500,headers,{'error': e})
