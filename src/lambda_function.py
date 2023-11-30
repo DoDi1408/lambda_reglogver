@@ -185,7 +185,7 @@ def lambda_handler(event, context):
 
     elif httpMethod == 'POST' and path =='/webhook':
         data = json.loads(message)
-        sig_header = event_headers['stripe_signature']
+        sig_header = event_headers['Stripe-Signature']
 
         response = addDonation(data,sig_header,headers)
 
