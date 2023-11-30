@@ -184,9 +184,12 @@ def lambda_handler(event, context):
             response = buildResponse(403,headers,{'message' : result['message']})
 
     elif httpMethod == 'POST' and path =='/webhook':
-        data = json.loads(message)
-        sig_header = event_headers['Stripe-Signature']
+        data = json.loads(message) ## is the body of event
+        sig_header = event_headers['Stripe-Signature'] ## is the signature header supposedly
 
+        logger.info(data)
+        logger.info(sig_header)
+        
         response = addDonation(data,sig_header,headers)
 
     elif httpMethod == 'POST' and path == '/payment-sheet':

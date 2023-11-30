@@ -34,7 +34,8 @@ def addDonation(data,sig_header,headers):
         # Invalid payload
         return  buildResponse(500,headers,{'error': e})
     except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        return  buildResponse(500,headers,{'error': e})
+        print("Invalid signature")
+        error_message = f"SignatureVerificationError: {str(e)}"
+        return buildResponse(500, headers, {'error': error_message})
     print('Unhandled event type {}'.format(event['type']))
     print(event)
