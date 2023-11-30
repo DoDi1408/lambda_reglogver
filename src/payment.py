@@ -24,4 +24,17 @@ def payment_sheet(headers,cantidad,email):
             'customer': customer.id,
             'publishableKey': 'pk_test_51O9qWCA1N4jj7tFywDEElSoJY86l4sLHoO5vzUeg9NB96GQJvu9E7Xv5OA9nR8ex55b9rw3GlZICsAw8EIS6lX1Y002girw2w9'
         }
-    )
+)
+
+def addDonation(data,sig_header,headers):
+    try:
+        event = stripe.Webhook.construct_event(
+                data, sig_header)
+    except ValueError as e:
+        # Invalid payload
+        return  buildResponse(500,headers,{'error': e})
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return  buildResponse(500,headers,{'error': e})
+    print('Unhandled event type {}'.format(event['type']))
+    print(event)

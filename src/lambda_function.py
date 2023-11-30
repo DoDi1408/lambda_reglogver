@@ -179,10 +179,16 @@ def lambda_handler(event, context):
         id = result['id']
 
         if result['verified'] == True:
-            createDonation(id,points)
             response = addPoints(id,points,headers)
         else:
             response = buildResponse(403,headers,{'message' : result['message']})
+
+    elif httpMethod == 'POST' and path =='/webhook':
+        eventStripe = None
+        data = json.loads(message)
+        sig_header = event_headers['STRIPE_SIGNATURE']
+
+        response = addDonation(data,sig_header,headers)
 
     elif httpMethod == 'POST' and path == '/payment-sheet':
         if 'access-token' in event_headers:
