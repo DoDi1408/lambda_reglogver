@@ -184,13 +184,32 @@ def lambda_handler(event, context):
             response = buildResponse(403,headers,{'message' : result['message']})
 
     elif httpMethod == 'POST' and path =='/webhook':
-        data = json.loads(message) ## is the body of event
-        sig_header = event_headers['Stripe-Signature'] ## is the signature header supposedly
-
-        logger.info(data)
-        logger.info(sig_header)
+        if 'access-token' in event_headers:
+            token = event_headers['access-token']
+        else:
+            return buildResponse(401,headers,{'message' :'No JWT Token'})
         
-        response = addDonation(data,sig_header,headers)
+        if message is None:
+            return buildResponse(401, headers, {'message':'Empty body'})
+        
+        
+        data = json.loads(message) ##message is the body of the api request
+
+        if 'amount' in data:
+            amount = data['amount']
+        else:
+            return buildResponse(401,headers,{'message' :'All fields requiered'})
+        
+        result = authenticateToken(token,sourceIp)
+        token = result['accessToken']
+        headers['access-token'] = token
+        id = result['id']
+
+        if result['verified'] == True:
+            addPoints(id,amount,headers)
+            response = createDonation(id,amount,headers)
+        else:
+            response = buildResponse(403,headers, {'message': result['message']})
 
     elif httpMethod == 'POST' and path == '/payment-sheet':
         if 'access-token' in event_headers:

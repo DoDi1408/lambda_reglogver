@@ -21,12 +21,12 @@ def getDonationsByUserId(id,headers):
     except Exception as e:
         return buildResponse(500, headers,{'error': str(e)})
     
-def createDonation(id,amount):
+def createDonation(id,amount,headers):
     try:
         with conn.cursor() as cur:
             sql_string = "INSERT INTO donacion (id_usuario, fecha, cantidad) VALUES (%s, CURRENT_TIMESTAMP(), %s)"
             cur.execute(sql_string, (id,amount))
-            return True
-    except Exception:
-        return False
+            return buildResponse(200, headers, {'message' : 'Success'})
+    except Exception as e:
+        return buildResponse(500, headers,{'error': str(e)})
     
