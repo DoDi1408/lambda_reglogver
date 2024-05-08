@@ -1,3 +1,3 @@
-# lambda_reglogver
+# Back-end lambda
 
-he cambiado un poco la idea, ahora he estado usando docker para pushear imagenes a ECR, donde ahi en lambda elijo la nueva imagen, quiero ahora usar este repositorio para que otras personas puedan contribuir al codigo y que se suba a ecr.
+<p>This repository was used to deploy a lambda container iamge to ECR. The lambda function used python and worked as a REST API together with AWS API Gateway. I used github actions to build the image on GitHub then pushed that image to AWS ECR, saving me quite a lot of time. </p>
